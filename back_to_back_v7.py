@@ -22,6 +22,7 @@ mpl.rcParams['font.family'] = 'serif'
 import zipfile
 import io
 from funcoes_auxiliares import *
+from zipfile import ZipFile
 
 
 st.markdown('# Resposta transitória da corrente de energização de capacitores')
@@ -360,32 +361,30 @@ if st.button('Gerar Relatório'):
     with open(arquivo_copiado_tex, 'w', encoding='utf-8') as file:
         file.write(updated_content)
 
-
-
     # Criando um arquivo ZIP em memória
     zip_buffer = io.BytesIO()
 
-    with zipfile.ZipFile(zip_buffer, "w") as z:
-        # Adicionando o arquivo TEX ao ZIP
-        with open(nome_arquivo_saida + '.tex', 'rb') as tex_file:
-            z.writestr(nome_arquivo_saida + '.tex', tex_file.read())
+    # Lista de arquivos que você quer zipar
+    lista_para_zipar = ["Correntes.png", "Sistema.png", "logo.png", "Picture1.png", nome_arquivo_saida + ".tex"]
 
-        # Adicionando Sistema.png ao ZIP
-        with open("Sistema.png", "rb") as img_file:
-            z.writestr("Sistema.png", img_file.read())
+    # Nome do arquivo ZIP de destino
+    zip_filename = nome_arquivo_saida + ".zip"
 
-        # Adicionando Correntes.png ao ZIP
-        with open("Correntes.png", "rb") as img_file:
-            z.writestr("Correntes.png", img_file.read())
+    # Cria o arquivo ZIP em memória
+    with ZipFile(zip_buffer, 'w') as z:
+        for file in lista_para_zipar:
+            # Adiciona cada arquivo especificado na lista ao ZIP
+            with open(file, "rb") as f:
+                z.writestr(file, f.read())
 
-    # Resetando o ponteiro do buffer para o início
+    # Move o ponteiro do buffer para o início
     zip_buffer.seek(0)
 
     # Criando o botão de download do arquivo ZIP
     st.download_button(
         label="Download ZIP",
         data=zip_buffer,
-        file_name=nome_arquivo_saida+".zip",
+        file_name=zip_filename,
         mime="application/zip"
     )
 
