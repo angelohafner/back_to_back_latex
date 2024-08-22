@@ -321,7 +321,7 @@ ax_mpl.plot(t * 1e3, i_pico_inicial * np.sin(2 * np.pi * f_fund * t) / 1e3, labe
 ax_mpl.set_xlabel('Tempo [ms]')
 ax_mpl.set_ylabel('Corrente [kA]')
 ax_mpl.legend()
-fig_mpl.savefig('figs/Correntes.png', bbox_inches='tight', dpi=300)
+fig_mpl.savefig('Correntes.png', bbox_inches='tight', dpi=300)
 
 
 if st.button('Gerar Relatório'):
