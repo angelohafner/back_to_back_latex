@@ -25,18 +25,48 @@ from funcoes_auxiliares import *
 from zipfile import ZipFile
 
 
-st.markdown('# Resposta transitória da corrente de energização de capacitores')
+# Dicionário de idiomas
+import dicionarios
+translations = dicionarios.translations
 
+# Dicionário de idiomas com bandeiras
+language_options = {
+    "en": "🇬🇧 English",
+    "pt": "🇧🇷 Português",
+    "zh": "🇨🇳 中文 (Chinese)",
+    "es": "🇪🇸 Español (Spanish)",
+    "fr": "🇫🇷 Français (French)",
+    "de": "🇩🇪 Deutsch (German)"
+}
+
+# Criação de uma lista de idiomas a partir do dicionário
+language_list = list(language_options.values())
+
+# Caixa de seleção mais sofisticada para escolha de idioma
+selected_language = st.selectbox(
+    "Choose Language / Escolha o idioma / 选择语言 / Sprache wählen",
+    language_list
+)
+
+# Obtenção da chave do idioma selecionado a partir do valor escolhido
+language_key = list(language_options.keys())[language_list.index(selected_language)]
+
+# Acesso ao dicionário de traduções com a chave selecionada
+text = translations[language_key]
+
+# Exemplo de uso das traduções
+st.markdown(text["title"])
+
+# Layout de colunas
 col0, col1, col2 = st.columns([2, 0.2, 8])
 with col0:
-    V_ff = st.number_input("Tensão 3𝝋 [kV]", min_value=0.1, max_value=750.0, value=TENSAO_DEFAULT, format="%.1f") * 1e3
+    V_ff = st.number_input(text["voltage"], min_value=0.1, max_value=750.0, value=13.8, format="%.1f") * 1e3
     V_fn = V_ff / np.sqrt(3)
-    f_fund = st.number_input("Frequência [Hz]", min_value=40.0, max_value=70.0, value=60.0, step=0.1, format="%.1f")
+    f_fund = st.number_input(text["frequency"], min_value=40.0, max_value=70.0, value=60.0, step=0.1, format="%.1f")
     w_fund = 2 * np.pi * f_fund
-    I_curto_circuito = st.number_input("Corrente de curto-circuito na barra [kA]", min_value=0.0, max_value=99e99,
-                                       value=CORRENTE_CURTO_DEFAULT, format="%.0f") * 1e3
-    nr_bancos = st.slider("Número de Bancos", min_value=2, max_value=20, value=NUM_BANCOS_DEFAULT, step=1)
-    FC = st.slider("Fator de Segurança", min_value=1.0, max_value=1.5, value=1.4, step=0.1, format="%.1f")
+    I_curto_circuito = st.number_input(text["short_circuit_current"], min_value=0.0, max_value=99e99, value=20.0, format="%.0f") * 1e3
+    nr_bancos = st.slider(text["number_of_banks"], min_value=2, max_value=20, value=5, step=1)
+    FC = st.slider(text["safety_factor"], min_value=1.0, max_value=1.5, value=1.4, step=0.1, format="%.1f")
 
 with col2:
     st.image(image='Sistema.png')
@@ -52,7 +82,7 @@ L_unit_barra = np.zeros(nr_bancos)
 L_capacitor = np.zeros(nr_bancos)
 L_reator = np.zeros(nr_bancos)
 
-st.markdown(r"#### Banco a ser energizado $(\#0)$")
+st.markdown(text["energize_bank"])  # "#### Banco a ser energizado $(\#0)$"
 cols = st.columns(5)
 ii = 0
 k = 0
@@ -91,8 +121,8 @@ with cols[ii]:
                                   min_value=0.0, max_value=10000.0, value=INDUTOR_DEFAULT, step=1.0,
                                   key="L_reator" + str(k), format="%.1f") * 1e-6
 
-st.markdown(r"#### Bancos já energizados $(\#1$ ao $\#n)$")
-
+# st.markdown(r"#### Bancos já energizados $(\#1$ ao $\#n)$")
+st.markdown(text["already_energized_banks"])  # "#### Bancos já energizados $(\#1$ ao $\#n)$"
 cols = st.columns(5)
 for k in range(1, nr_bancos):
     ii = 0
@@ -228,54 +258,45 @@ st.plotly_chart(fig, use_container_width=True)
 # coluna0, coluna1 = st.columns([1, 1])
 
 # with coluna0:
-st.markdown('#### Resultados')
-st.write("Corrente nominal do banco $I_{\\rm nominal}=$", EngNumber(I_fn[0]), "A")
-st.markdown('##### Para banco único')
+st.markdown(text["results"])
+st.write(text["nominal_current"], EngNumber(I_fn[0]), "A")
+st.markdown(text["for_single_bank"])
 
 corrente_pico_bancos_isolado = i_pico_inicial_isolado / (I_fn[0] * np.sqrt(2))
 
-st.write("Corrente de pico na energização $I_{\\rm{inrsuh}}=$",
-         EngNumber(i_pico_inicial_isolado), "${\\rm A}$,$~$que corresponde a", np.round(corrente_pico_bancos_isolado, 1), "$\\times I_{\\rm{nominal}}$")
-st.write("Frequência de Oscilação = ", EngNumber(w_isolado / (2 * np.pi)), "${\\rm Hz}$, que corresponde a",
-         np.round(w_isolado / w_fund, 1), "$\\times f_1$")#, com $\max \left( {\\frac{{di}}{{dt}}} \\right) = $", EngNumber((V_fn*np.sqrt(2)/L_eq_isolado)/1e6), "$\\frac{{\\rm{V}}}{{{\\rm{\\mu s}}}}$")
-st.markdown('##### Para banco com os demais bancos energizados')
+st.write(text["peak_current_energization"], EngNumber(i_pico_inicial_isolado), "${\\rm A}$,$~$que corresponde a", np.round(corrente_pico_bancos_isolado, 1), "$\\times I_{\\rm{nominal}}$")
+st.write(text["oscillation_frequency"], EngNumber(w_isolado / (2 * np.pi)), "${\\rm Hz}$, que corresponde a", np.round(w_isolado / w_fund, 1), "$\\times f_1$")
+
+st.markdown(text["for_bank_with_others_energized"])
+
 corrente_pico_bancos_back_to_back = i_pico_inicial / (I_fn * np.sqrt(2))
-st.write("Corrente de pico na energização $I_{\\rm{inrsuh}}=$",
-         EngNumber(i_pico_inicial), "${\\rm A}$, que corresponde a", np.round(corrente_pico_bancos_back_to_back.max(), 1), "$\\times I_{\\rm{nominal}}$")
+st.write(text["peak_current_energization"], EngNumber(i_pico_inicial), "${\\rm A}$, que corresponde a", np.round(corrente_pico_bancos_back_to_back.max(), 1), "$\\times I_{\\rm{nominal}}$")
+
 freq_oscilacao = omega / (2 * np.pi)
-st.write("Frequência de Oscilação = ", EngNumber(freq_oscilacao), "${\\rm Hz}$, que corresponde a",
-         np.round(omega / w_fund, 1), "$\\times f_1$")
+
+st.write(text["oscillation_frequency"], EngNumber(freq_oscilacao), "${\\rm Hz}$, ", np.round(omega / w_fund, 1), "$\\times f_1$")
+
 # st.write("Harmônico de Oscilação = ", EngNumber(omega / w_fund))
 
 # with coluna1:
-st.markdown('#### Conclusão')
-st.markdown(
-    'As amplitudes típicas das correntes de *inrush* para energização *back-to-back* de bancos de capacitores são de vários ${\\rm kA}$ com frequências de $2{\\rm~kHz}$ a $5{\\rm~kHz}$ [$^{[1]}$](https://ieeexplore.ieee.org/document/7035261).')
-conclusao1 = "cuidado aqui"
+st.markdown(text["conclusion"])
+st.markdown(text["conclusion_text"])
+
 temp = max(corrente_pico_bancos_isolado, corrente_pico_bancos_back_to_back.max())
 
 if temp < 100 and freq_oscilacao < 4250:
-    conclusao1 = ("Reator adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $" + str(EngNumber(temp)) +
-                 "$\\le 100$ e $f_{osc} = $" + str(EngNumber(freq_oscilacao)) + "Hz < 4,25 kHz, " +
-                 "conforme IEEE Std C37.012, p\\'{a}gina 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p\\'{a}gina 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
-
-    conclusao = ("Reator adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $" + str(EngNumber(temp)) +
-                 "$\\le 100$ e $f_{osc} = $" + str(EngNumber(freq_oscilacao)) + "Hz < 4,25 kHz, " +
-                 "conforme IEEE Std C37.012, página 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), página 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
-
+    conclusao1 = (text["adequate_reactor"] + str(EngNumber(temp)) + "$\\le 100$ e $f_{osc} = $" +
+                  str(EngNumber(freq_oscilacao)) + "Hz < 4,25 kHz, " +
+                  "IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
 else:
-    conclusao1 = ("Reator n\\~{a}o adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $" + str(EngNumber(temp)) +
-                  "$> 100$ ou $f_{osc} = $" + str(EngNumber(freq_oscilacao)) + "Hz > 4,25 kHz, " +
-                  "conforme IEEE Std C37.012, p\\'{a}gina 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p\\'{a}gina 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
+    conclusao1 = (text["not_adequate_reactor"] + str(EngNumber(temp)) + "$> 100$ ou $f_{osc} = $" +
+                  str(EngNumber(freq_oscilacao)) + "Hz > 4,25 kHz, " +
+                  "IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
 
-    conclusao = ("Reator NÃO adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $" + str(EngNumber(temp)) +
-                 "$> 100$ ou $f_{osc} = $" + str(EngNumber(freq_oscilacao)) + "Hz > 4,25 kHz, " +
-                 "conforme IEEE Std C37.012, página 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), página 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
-
-st.write(conclusao)
+st.write(conclusao1)
 cem = temp
 
-st.markdown('#### Bibliografia')
+st.markdown(text["bibliography"])
 col_bib1, col_bib2 = st.columns([1, 25])
 with col_bib1:
     """
@@ -325,7 +346,7 @@ ax_mpl.legend()
 fig_mpl.savefig('Correntes.png', bbox_inches='tight', dpi=300)
 
 
-if st.button('Gerar Relatório'):
+if st.button(text["latex_report"]):
     arquivo_original_tex = 'TEMPLATE_Relatorio_Inrush_DAX.tex'
     arquivo_copiado_tex = nome_arquivo_saida+'.tex'
     shutil.copy(arquivo_original_tex, arquivo_copiado_tex)
