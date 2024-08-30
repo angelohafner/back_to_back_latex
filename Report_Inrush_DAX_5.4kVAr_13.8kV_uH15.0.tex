@@ -1,27 +1,29 @@
 \documentclass[a4paper]{article}
-\usepackage{amsmath}  % Pacote necessário para \dfrac
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{amsmath}  % 必需的用于 \dfrac 的宏包
 \usepackage[utf8]{inputenc}
-\usepackage[british,UKenglish,USenglish,english,american]{babel}
+\usepackage[chinese]{babel}
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{fancyhdr}
-\usepackage{lastpage} % pacote para obter o número total de páginas
-\usepackage{geometry} % pacote para ajustar as margens
-\usepackage[datesep=/,style=ddmmyyyy]{datetime2} % pacote para formatar a data
-\usepackage{setspace} % Inclui o pacote setspace
+\usepackage{lastpage} % 用于获取总页数的宏包
+\usepackage{geometry} % 用于调整边距的宏包
+\usepackage[datesep=/,style=ddmmyyyy]{datetime2} % 用于格式化日期的宏包
+\usepackage{setspace} % 包含 setspace 宏包
 \usepackage{enumitem}
-\usepackage{amssymb} % Para mais símbolos
+\usepackage{amssymb} % 用于更多符号
 \usepackage{indentfirst}
 \usepackage{hyperref}
 \usepackage{array}
 \usepackage{booktabs}
 
-\usepackage{titlesec} % Inclui o pacote titlesec
-% Redefinindo o formato do título da seção com um tamanho de fonte menor
+\usepackage{titlesec} % 包含 titlesec 宏包
+% 使用较小的字体重新定义章节标题格式
 \titleformat{\section}
 {\normalfont\large\bfseries}{\thesection}{1em}{}
 
-% Definindo margens da página e do cabeçalho
+% 定义页面和标题的边距
 \geometry{
 	left=20mm,
 	right=20mm,
@@ -31,11 +33,11 @@
 }
 
 \pagestyle{fancy}
-\fancyhf{} % limpa o cabeçalho e rodapé padrão
-\renewcommand{\headrulewidth}{0pt} % remove a linha do cabeçalho
-\renewcommand{\footrulewidth}{0.4pt} % linha acima do rodapé
+\fancyhf{} % 清除默认的标题和页脚
+\renewcommand{\headrulewidth}{0pt} % 删除标题中的线条
+\renewcommand{\footrulewidth}{0.4pt} % 页脚上方的线条
 
-\fancyhead[C]{ % conteúdo centralizado no cabeçalho
+\fancyhead[C]{ % 标题中的居中内容
 	\begin{tabular}{|m{3.5cm}|m{9.0cm}|m{3.5cm}|}
 		\hline
 		\begin{minipage}[c][2.0cm][c]{3.5cm}
@@ -44,24 +46,23 @@
 		\end{minipage} & 
 		\begin{minipage}[c][2.0cm][c]{9cm}
 			\centering
-			\hyphenpenalty=10000 % Evita hifenização
-			\vspace*{\fill} % Espaço vertical flexível antes do texto
-			\begin{spacing}{1.5} % Aumenta o espaçamento entre linhas para 1.25
-				{\large \textbf{Inductor for Reducing Transient \textit{Inrush} Current in Capacitors}}
+			\hyphenpenalty=10000 % 避免断字
+			\vspace*{\fill} % 文本前的灵活垂直间距
+			\begin{spacing}{1.5} % 将行间距增加到 1.25
+				{\large \textbf{用于减少电容器中的瞬态\textit{Inrush}电流的电感器}}
 			\end{spacing}
-			\vspace*{\fill} % Espaço vertical flexível depois do texto
+			\vspace*{\fill} % 文本后的灵活垂直间距
 		\end{minipage} & 
 		\begin{minipage}[c][2.0cm][c]{3.5cm}
 			\raggedleft
-			Issued: \DTMtoday \\
-			Page: \thepage/\pageref{LastPage}
+			发行日期: \DTMtoday \\
+			页数: \thepage/\pageref{LastPage}
 		\end{minipage} \\
 		\hline
 	\end{tabular}
 }
 
-
-% Conteúdo do rodapé
+% 页脚内容
 \fancyfoot[L]{%
 	\begin{tabular}[b]{@{}l@{}}
 		\href{http://www.dax.energy}{www.dax.energy}
@@ -78,26 +79,25 @@
 	\end{tabular}
 }
 
-
 \begin{document}
-	\setstretch{1.25} % Define o espaçamento entre linhas para 1.25
+	\setstretch{1.25} % 将行间距设置为 1.25
 	
-	\section{Context}
-	The energization of a capacitor bank (Figure \ref{fig:picture1}) by closing a circuit breaker will result in a high transient peak current (Figure \ref{fig:picture2}), called inrush. The magnitude and frequency of this transient peak current are functions of:
+	\section{背景}
+	通过闭合断路器对电容器组进行激励（图 \ref{fig:picture1}）将导致高的瞬态峰值电流（图 \ref{fig:picture2}），称为冲击电流。此瞬态峰值电流的幅值和频率是以下因素的函数：
 	\begin{itemize}[label=\textendash]
-		\item the applied voltage (point on the voltage wave at closing);
-		\item the equivalent capacitance of the circuit;
-		\item the inductance in the circuit (amount and location);
-		\item the charge on the capacitor bank at the time of closing;
-		\item any damping of the circuit due to closing resistors or other resistance in the circuit.
+		\item 施加的电压（闭合时电压波的点）;
+		\item 电路的等效电容;
+		\item 电路中的电感（数量和位置）;
+		\item 闭合时电容器组中的电荷;
+		\item 由于闭合电阻器或电路中其他电阻引起的任何阻尼。
 	\end{itemize}
 	
-	\section{Input data from the bank}
+	\section{电容器组的输入数据}
 	\begin{itemize}[label=\textendash]
-		\item Reactive power  = {{27.0 MVAr}}
-		\item Three-phase voltage  = {{13.8 kV}}
-		\item Single-phase voltage  = {{8.0 kV}}
-		\item Short-circuit current  = {{20.0 kA}}
+		\item 无功功率  = {{27.0 MVAr}}
+		\item 三相电压  = {{13.8 kV}}
+		\item 单相电压  = {{8.0 kV}}
+		\item 短路电流  = {{20.0 kA}}
 	\end{itemize}
 	
 	\begin{center}
@@ -115,99 +115,94 @@
 
 	\end{center}
 	
+	\section{初步考虑}
 	
-	
-	\section{Initial Considerations}
-	
-	The transient \textit{inrush} current is not a limiting factor in isolated capacitor bank applications. However, when capacitor banks are switched \textit{back-to-back}, i.e., when one bank is switched on while another bank is connected to the same bus, high-magnitude, high-frequency transient currents will flow between the switched bank and those that were already switched on.
+	瞬态\textit{Inrush}电流在独立电容器组应用中不是限制因素。然而，当电容器组被\textit{背靠背}切换时，即在一个组被激励时，而另一个组仍然连接到同一母线上，高幅值和自然频率的瞬态电流将流动在已激励的组和新激励的组之间。
 	
 	\begin{figure}[!hbp]
 		\centering
 		\includegraphics{Picture1.png}
-		\caption{Capacitor bank system.}
+		\caption{电容器组系统。}
 		\label{fig:picture1}
 	\end{figure}
 	
+	这种振荡电流仅受电容器组的阻抗以及已激励的组和切换组（组\#0）之间的电路的限制，通常在系统频率周期的一小部分内衰减至零。在\textit{背靠背}切换的情况下，电源提供的分量以较低的频率（60 Hz）存在，并且与\textit{Inrush}电流相比很小，可以忽略不计 \href{https://ieeexplore.ieee.org/document/7035261}{[ANSI/IEEE C37.012-1979]}。
 	
-	This oscillatory current is limited only by the impedance of the capacitor bank and the circuit between the energized bank(s) and the switched bank (Bank \#0), which typically decays to zero within a fraction of a system frequency cycle. In the case of \textit{back-to-back} switching, the component provided by the source is at a lower frequency (60 Hz) and so small compared to the \textit{inrush} current that it can be neglected \href{https://ieeexplore.ieee.org/document/7035261}{[ANSI/IEEE C37.012-1979]}.
-	
-	\section{Results}
+	\section{结果}
 	\begin{figure}[!hbp]
 		\centering
 		\includegraphics{Correntes.png}
-		\caption{Instantaneous current in the capacitor bank switched on in a fundamental frequency cycle.}
+		\caption{在一个基础频率周期内激励的电容器组中的瞬时电流。}
 		\label{fig:picture2}
 	\end{figure}
 	
-	The values obtained with the selected reactor ($L_{reator} = {{15.0}} \, \mu \rm{H} $) are:
+	使用选定的电感器（$L_{reator} = {{15.0}} \, \mu \rm{H} $）获得的值为：
 	\begin{itemize}[label=\textendash]
-		\item Peak current: {{24.5 kA}};
-		\item Oscillation Frequency: {{4.1 k}}Hz;
-		\item Inrush current / Nominal current: {{76.8}}
+		\item 峰值电流: {{24.5 kA}};
+		\item 振荡频率: {{4.1 k}}Hz;
+		\item 冲击电流 / 额定电流: {{76.8}}
 	\end{itemize}
 	
-	\section{Conclusion}
-	{{Adequate reactor, as $\dfrac{I_{\rm inrush}}{I_{\rm nominal}} = $76.83$\le 100$ e $f_{\rm osc} = $4,091.12Hz < 4,25 kHz, IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).}}
+	\section{结论}
+	{{合适的反应堆，因为 $\dfrac{I_{\rm inrush}}{I_{\rm rated}} = $76,83$\le 100$ e $f_{\rm osc} = $4091Hz < 4,25 kHz, IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).}}
 	
-	\section{References}
+	\section{参考文献}
 	
 	\noindent
 	\begin{tabular}{p{0.2cm} p{15.8cm}}
 		\href{https://ieeexplore.ieee.org/document/7035261}{[1]} &
 		\begin{minipage}[t]{15.8cm}
-			IEEE Application Guide for Capacitance Current Switching for AC High-Voltage Circuit Breakers Rated on a Symmetrical Current Basis, in ANSI/IEEE C37.012-1979, vol., no., pp.1-54, 6 Feb. 1979, doi: 10.1109/IEEESTD.1979.7035261.
+			IEEE 应用指南关于对称电流基础上的 AC 高压断路器的电容电流切换，在 ANSI/IEEE C37.012-1979 中，vol.，no.，pp.1-54，1979 年 2 月 6 日，doi: 10.1109/IEEESTD.1979.7035261。
 		\end{minipage} \\
 		
 		\href{https://ieeexplore.ieee.org/document/9574631}{[2]} &
 		\begin{minipage}[t]{15.8cm}
-			IEEE Approved Draft Standard Requirements for Capacitor Switches for AC Systems (1 kV to 38 kV), in IEEE PC37.66/D10, October 2021, vol., no., pp.1-35, 13 Dec. 2021.
+			IEEE 批准的 AC 系统（1 kV 至 38 kV）电容器开关标准草案要求，在 IEEE PC37.66/D10 中，2021 年 10 月，vol.，no.，pp.1-35，2021 年 12 月 13 日。
 		\end{minipage} \\
 		
 		
 		\href{https://webstore.iec.ch/publication/62785}{[3]} &
 		\begin{minipage}[t]{15.8cm}
-			IEC 62271-100 High-voltage switchgear and controlgear - Part 100: Alternating-current circuit-breakers
+			IEC 62271-100 高压开关设备和控制设备 - 第 100 部分：交流断路器
 		\end{minipage} \\
 		
 		\href{https://ieeexplore.ieee.org/document/5318709}{[4]} &
 		\begin{minipage}[t]{15.8cm}
-			IEEE Standard for AC High-Voltage Circuit Breakers Rated on a Symmetrical Current Basis--Preferred Ratings and Related Required Capabilities for Voltages Above 1000 V, in IEEE Std C37.06-2009, vol., no., pp.1-56, 6 Nov. 2009, doi: 10.1109/IEEESTD.2009.5318709.
+			IEEE 标准关于对称电流基础上的 AC 高压断路器的额定值 - 电压超过 1000 V 的首选额定值和相关所需能力，在 IEEE Std C37.06-2009 中，vol.，no.，pp.1-56，2009 年 11 月 6 日，doi: 10.1109/IEEESTD.2009.5318709。
 		\end{minipage} \\
 		
 		\href{https://cdn.standards.iteh.ai/samples/101972/4e7e06bd66d2443da668b8e0c6c60512/IEC-62271-100-2021.pdf}{[5]} &
 		\begin{minipage}[t]{15.8cm}
-			IEC 62271-100 High-voltage switchgear and controlgear – Part 100: Alternating-current circuit-breakers.
+			IEC 62271-100 高压开关设备和控制设备 – 第 100 部分：交流断路器。
 		\end{minipage} \\
 		
 		\href{https://www.normas.com.br/autorizar/visualizacao-nbr/313/identificar/visitante}{[6]} &
 		\begin{minipage}[t]{15.8cm}
-			NBR 5282 Shunt power capacitors for nominal voltage system above 1000 V.
+			NBR 5282 适用于额定电压超过 1000 V 的系统的并联电力电容器。
 		\end{minipage} \\
 	\end{tabular}
 	
-	
-	
-	% Space for signatures
-	\noindent % Prevents indentation
-	\begin{minipage}[t]{0.5\textwidth} % Starts the first column for signature
-		\centering % Aligns text to the center
-		\vspace{5cm} % Space reserved for the signature
-		\rule{6cm}{0.4pt}\\ % Line for signature
-		\textbf{Angelo A. Hafner}\\ % Name
-		Electrical Engineer\\ % Title
-		CONFEA: 2.500.821.919\\ % Registration number
-		CREA/SC: 045.776-5\\ % Another registration number
-		aah@dax.energy % Email
+	% 签名空间
+	\noindent % 防止缩进
+	\begin{minipage}[t]{0.5\textwidth} % 开始签名的第一列
+		\centering % 将文本对齐到中心
+		\vspace{5cm} % 为签名预留空间
+		\rule{6cm}{0.4pt}\\ % 签名线
+		\textbf{Angelo A. Hafner}\\ % 名称
+		电气工程师\\ % 职称
+		CONFEA: 2.500.821.919\\ % 注册号
+		CREA/SC: 045.776-5\\ % 另一个注册号
+		aah@dax.energy % 电子邮件
 	\end{minipage}%
-	\hfill % Space between columns
-	\begin{minipage}[t]{0.5\textwidth} % Starts the second column for signature
-		\centering % Aligns text to the center
-		\vspace{5cm} % Space reserved for the signature
-		\rule{6cm}{0.4pt}\\ % Line for signature
-		\textbf{Tiago Machado}\\ % Name
-		Business Manager\\ % Title
-		Mobile: +55 41 99940-3744\\ % Contact
-		tm@dax.energy % Email
+	\hfill % 列间空隙
+	\begin{minipage}[t]{0.5\textwidth} % 开始签名的第二列
+		\centering % 将文本对齐到中心
+		\vspace{5cm} % 为签名预留空间
+		\rule{6cm}{0.4pt}\\ % 签名线
+		\textbf{Tiago Machado}\\ % 名称
+		业务经理\\ % 职称
+		手机: +55 41 99940-3744\\ % 联系方式
+		tm@dax.energy % 电子邮件
 	\end{minipage}
 	
 \end{document}

@@ -43,13 +43,25 @@ def configure_language_and_locale():
 
 
 
-import locale
 
 def format_number(value, language_key):
+    """
+    Format a number based on the specified language.
+
+    Parameters:
+        value (float): The number to format.
+        language_key (str): The language key ('en' for English, others for languages that use a comma as a separator).
+
+    Returns:
+        str: The formatted number as a string.
+    """
     if language_key == 'en':
         # Use dot as decimal separator
-        return locale.format_string("%.2f", value, grouping=True)
+        formatted_number = f"{value:,.2f}"
     else:
         # Use comma as decimal separator
-        return locale.format_string("%.2f", value, grouping=True).replace('.', ',')
+        formatted_number = f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    return formatted_number
+
 
