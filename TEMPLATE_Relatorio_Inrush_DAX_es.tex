@@ -92,25 +92,14 @@
 	
 	\section{Datos de entrada del banco}
 	\begin{itemize}[label=\textendash]
-		\item Potencia reactiva  = 27.0 MVAr
-		\item Voltaje trifásico  = 13.8 kV
-		\item Voltaje monofásico  = 8.0 kV
-		\item Corriente de cortocircuito  = 20.0 kA
+		\item Potencia reactiva  = {{potencia_reativa_do_banco}}
+		\item Voltaje trifásico  = {{tensao_trifasica}}
+		\item Voltaje monofásico  = {{tensao_monofasica}}
+		\item Corriente de cortocircuito  = {{corrente_de_curto}}
 	\end{itemize}
 	
 	\begin{center}
-		\begin{tabular}{lllllllllll}
-\toprule
- & $Q_{3\phi}$ & $Q_{1\phi}$ & $V_{3\phi}$ & $V_{1\phi}$ & $I_{1\phi}$ & $X_{1\phi}$ & $C_{1\phi}$ & $L_{1\phi}$ & $I_{p}/I_{n}$ & $f_{0}$ \\
-\midrule
-0 & 5.4 MVAr & 1.8 MVAr & 13.8 kV & 8.0 kV & 225.9 A & 35.3 $\Omega$ & 75.22 µF & 15.0 µH & 13.0 & 559.3 Hz \\
-1 & 5.4 MVAr & 1.8 MVAr & 13.8 kV & 8.0 kV & 225.9 A & 35.3 $\Omega$ & 75.22 µF & 15.0 µH & 47.9 & 4.1 kHz \\
-2 & 5.4 MVAr & 1.8 MVAr & 13.8 kV & 8.0 kV & 225.9 A & 35.3 $\Omega$ & 75.22 µF & 15.0 µH & 64.0 & 4.1 kHz \\
-3 & 5.4 MVAr & 1.8 MVAr & 13.8 kV & 8.0 kV & 225.9 A & 35.3 $\Omega$ & 75.22 µF & 15.0 µH & 72.0 & 4.1 kHz \\
-4 & 5.4 MVAr & 1.8 MVAr & 13.8 kV & 8.0 kV & 225.9 A & 35.3 $\Omega$ & 75.22 µF & 15.0 µH & 76.8 & 4.1 kHz \\
-\bottomrule
-\end{tabular}
-
+		% INSERT_TABLE_HERE
 	\end{center}
 	
 	\section{Consideraciones iniciales}
@@ -134,15 +123,15 @@
 		\label{fig:picture2}
 	\end{figure}
 	
-	Los valores obtenidos con el reactor seleccionado ($L_{reator} = 15.0 \, \mu \rm{H} $) son:
+	Los valores obtenidos con el reactor seleccionado ($L_{reator} = {{indutancia_escolhida}} \, \mu \rm{H} $) son:
 	\begin{itemize}[label=\textendash]
-		\item Corriente de pico: 24.5 kA;
-		\item Frecuencia de oscilación: 4.1 kHz;
-		\item Corriente inrush / Corriente nominal: 76.8
+		\item Corriente de pico: {{corrente_pico}};
+		\item Frecuencia de oscilación: {{frequencia_oscilacao}}Hz;
+		\item Corriente inrush / Corriente nominal: {{inrush_inominal}}
 	\end{itemize}
 	
 	\section{Conclusión}
-	Reactor adecuado, ya que $\dfrac{I_{\rm inrush}}{I_{\rm rated}} = $76,83$\le 100$ e $f_{\rm osc} = $4,091,12Hz < 4,25 kHz, IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).
+	{{conclusao1}}
 	
 	\section{Referencias}
 	

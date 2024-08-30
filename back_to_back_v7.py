@@ -10,63 +10,42 @@ NUM_BANCOS_DEFAULT = 4
 CORRENTE_CURTO_DEFAULT = 1000.0
 R_EQ_PARA_AMORTECIMENTO = 0.1
 
-from matplotlib.ticker import EngFormatter
-import numpy as np
-import pandas as pd
+
+import config
 import streamlit as st
-import plotly.graph_objects as go
-from engineering_notation import EngNumber
 import shutil
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'serif'
-import zipfile
-import io
 from funcoes_auxiliares import *
-from zipfile import ZipFile
 
 
-# Dicionário de idiomas
-import dicionarios
-translations = dicionarios.translations
+# Set the language and locale
+text, language_key = config.configure_language_and_locale()
 
-# Dicionário de idiomas com bandeiras
-language_options = {
-    "en": "🇬🇧 English",
-    "pt": "🇧🇷 Português",
-    "zh": "🇨🇳 中文 (Chinese)",
-    "es": "🇪🇸 Español (Spanish)",
-    "fr": "🇫🇷 Français (French)",
-    "de": "🇩🇪 Deutsch (German)"
-}
-
-# Criação de uma lista de idiomas a partir do dicionário
-language_list = list(language_options.values())
-
-# Caixa de seleção mais sofisticada para escolha de idioma
-selected_language = st.selectbox(
-    "Choose Language / Escolha o idioma / 选择语言 / Sprache wählen",
-    language_list
-)
-
-# Obtenção da chave do idioma selecionado a partir do valor escolhido
-language_key = list(language_options.keys())[language_list.index(selected_language)]
-
-# Acesso ao dicionário de traduções com a chave selecionada
-text = translations[language_key]
-
-# Exemplo de uso das traduções
 st.markdown(text["title"])
 
-# Layout de colunas
 col0, col1, col2 = st.columns([2, 0.2, 8])
 with col0:
-    V_ff = st.number_input(text["voltage"], min_value=0.1, max_value=750.0, value=13.8, format="%.1f") * 1e3
+    # Input widgets using `st.text_input` to respect locale decimal separator
+    V_ff_input = st.text_input(text["voltage"], value=format_input(13.8, language_key))
+    f_fund_input = st.text_input(text["frequency"], value=format_input(60.0, language_key))
+    I_curto_circuito_input = st.text_input(text["short_circuit_current"], value=format_input(20.0, language_key))
+
+    # Convert inputs to floats
+    V_ff = parse_input(V_ff_input, language_key) * 1e3 if V_ff_input else None
+    f_fund = parse_input(f_fund_input, language_key) if f_fund_input else None
+    I_curto_circuito = parse_input(I_curto_circuito_input, language_key) * 1e3 if I_curto_circuito_input else None
+
+    # Check if the inputs were converted correctly
+    if V_ff is None or f_fund is None or I_curto_circuito is None:
+        st.error("Por favor, insira valores válidos.")
+
+    nr_bancos = st.slider(text["number_of_banks"], min_value=2, max_value=20, value=5)
+
+
     V_fn = V_ff / np.sqrt(3)
-    f_fund = st.number_input(text["frequency"], min_value=40.0, max_value=70.0, value=60.0, step=0.1, format="%.1f")
     w_fund = 2 * np.pi * f_fund
-    I_curto_circuito = st.number_input(text["short_circuit_current"], min_value=0.0, max_value=99e99, value=20.0, format="%.0f") * 1e3
-    nr_bancos = st.slider(text["number_of_banks"], min_value=2, max_value=20, value=5, step=1)
-    FC = st.slider(text["safety_factor"], min_value=1.0, max_value=1.5, value=1.4, step=0.1, format="%.1f")
+    FC = 1.4
 
 with col2:
     st.image(image='Sistema.png')
@@ -86,40 +65,43 @@ st.markdown(text["energize_bank"])  # "#### Banco a ser energizado $(\#0)$"
 cols = st.columns(5)
 ii = 0
 k = 0
+# Substituindo st.number_input por st.text_input
 with cols[ii]:
-    Q_3f[k] = st.number_input("$Q_{3\\varphi}$[MVAr] ",
-                              value=REATIVOS_DEFAULT, step=0.01,
-                              key="Q_3f_" + str(k), format="%.2f") * 1e6
+    Q_3f_input = st.text_input("$Q_{3\\varphi}$[MVAr] ",
+                               value=format_input(REATIVOS_DEFAULT, language_key),
+                               key="Q_3f_" + str(k))
+    Q_3f[k] = parse_input(Q_3f_input, language_key) * 1e6 if Q_3f_input else None
+
 ii = ii + 1
 with cols[ii]:
-    comp_cabo[k] = st.number_input("$\\ell_{\\rm cabo}{\\rm [m]}$",
-                                   min_value=0.0, max_value=10e3, value=0.0, step=0.01,
-                                   key="comp_cabo" + str(k))
-# ii = ii + 1
-# with cols[ii]:
-#         comp_barra[k] =  st.number_input("$\\ell_{\\rm barra}{\\rm [m]}$",
-#                                         min_value=0.0,  max_value=100.0, value=0.0, step=0.01,
-#                                         key="comp_barra"+str(k))
+    comp_cabo_input = st.text_input("$\\ell_{\\rm cable}{\\rm [m]}$",
+                                    value=format_input(0.0, language_key),
+                                    key="comp_cabo" + str(k))
+    comp_cabo[k] = parse_input(comp_cabo_input, language_key) if comp_cabo_input else None
+
 ii = ii + 1
 with cols[ii]:
-    L_unit_cabo[k] = st.number_input("$L'_{\\rm cabo} {\\rm \\left[{\\mu H}/{m} \\right]}$",
-                                     min_value=0.00, max_value=100.0, value=0.00, step=0.01,
-                                     key="L_unit_cabo" + str(k), format="%.1f") * 1e-6
-# ii = ii + 1
-# with cols[ii]:
-#         L_unit_barra[k] =  st.number_input("$L'_{\\rm barra} {\\rm \\left[{\\mu H}/{m} \\right]}$",
-#                                         min_value=0.0,  max_value=100.0, value=0.00, step=0.01,
-#                                         key="L_unit_barra"+str(k)) * 1e-6
+    L_unit_cabo_input = st.text_input("$L'_{\\rm cable} {\\rm \\left[{\\mu H}/{m} \\right]}$",
+                                      value=format_input(0.00, language_key),
+                                      key="L_unit_cabo" + str(k))
+    L_unit_cabo[k] = parse_input(L_unit_cabo_input, language_key) * 1e-6 if L_unit_cabo_input else None
+
 ii = ii + 1
 with cols[ii]:
-    L_capacitor[k] = st.number_input("$L_{\\rm capacitor} {\\rm \\left[{\\mu H} \\right]}$",
-                                     min_value=0.0, max_value=100.0, value=5.00, step=0.01,
-                                     key="L_capacitor" + str(k), format="%.1f") * 1e-6
+    L_capacitor_input = st.text_input("$L_{\\rm capacitor} {\\rm \\left[{\\mu H} \\right]}$",
+                                      value=format_input(5.00, language_key),
+                                      key="L_capacitor" + str(k))
+    L_capacitor[k] = parse_input(L_capacitor_input, language_key) * 1e-6 if L_capacitor_input else None
+
 ii = ii + 1
 with cols[ii]:
-    L_reator[k] = st.number_input("$L_{\\rm reator} {\\rm \\left[{\\mu H} \\right]}$",
-                                  min_value=0.0, max_value=10000.0, value=INDUTOR_DEFAULT, step=1.0,
-                                  key="L_reator" + str(k), format="%.1f") * 1e-6
+    L_reator_input = st.text_input("$L_{\\rm reactor} {\\rm \\left[{\\mu H} \\right]}$",
+                                   value=format_input(INDUTOR_DEFAULT, language_key),
+                                   key="L_reator" + str(k))
+    L_reator[k] = parse_input(L_reator_input, language_key) * 1e-6 if L_reator_input else None
+
+
+
 
 # st.markdown(r"#### Bancos já energizados $(\#1$ ao $\#n)$")
 st.markdown(text["already_energized_banks"])  # "#### Bancos já energizados $(\#1$ ao $\#n)$"
@@ -127,68 +109,60 @@ cols = st.columns(5)
 for k in range(1, nr_bancos):
     ii = 0
     with cols[ii]:
-        if k == 1:
-            Q_3f[k] = st.number_input("$Q_{3\\varphi}$[MVAr] ",
-                                      value=REATIVOS_DEFAULT,
-                                      key="Q_3f_" + str(k), format="%.2f", label_visibility="visible") * 1e6
-        else:
-            Q_3f[k] = st.number_input("$Q_{3\\varphi}$[MVAr] ",
-                                      value=REATIVOS_DEFAULT,
-                                      key="Q_3f_" + str(k), format="%.2f", label_visibility="collapsed") * 1e6
-    ii = ii + 1
-    with cols[ii]:
-        if k == 1:
-            comp_cabo[k] = st.number_input("$\\ell_{\\rm cabo}{\\rm [m]}$",
-                                           min_value=0.0, max_value=10e3, value=0.0, step=0.01,
-                                           key="comp_cabo" + str(k), label_visibility="visible")
-        else:
-            comp_cabo[k] = st.number_input("$\\ell_{\\rm cabo}{\\rm [m]}$",
-                                           min_value=0.0, max_value=10e3, value=0.0, step=0.01,
-                                           key="comp_cabo" + str(k), label_visibility="collapsed")
+        Q_3f_input = st.text_input(
+            "$Q_{3\\varphi}$[MVAr]",
+            value=format_input(REATIVOS_DEFAULT, language_key),
+            key="Q_3f_" + str(k),
+            label_visibility="visible" if k == 1 else "collapsed"
+        )
+        Q_3f[k] = parse_input(Q_3f_input, language_key) * 1e6 if Q_3f_input else None
 
-    # ii = ii + 1
-    # with cols[ii]:
-    #     comp_barra[k] = st.number_input("$\\ell_{\\rm barra}{\\rm [m]}$",
-    #                                     min_value=0.0, max_value=100.0, value=0.0, step=0.01,
-    #                                     key="comp_barra" + str(k))
     ii = ii + 1
     with cols[ii]:
-        if k == 1:
-            L_unit_cabo[k] = st.number_input("$L'_{\\rm cabo} {\\rm \\left[{\\mu H}/{m} \\right]}$",
-                                             min_value=0.0, max_value=100.0, value=0.00, step=0.01,
-                                             key="L_unit_cabo" + str(k), label_visibility="visible") * 1e-6
-        else:
-            L_unit_cabo[k] = st.number_input("$L'_{\\rm cabo} {\\rm \\left[{\\mu H}/{m} \\right]}$",
-                                             min_value=0.0, max_value=100.0, value=0.00, step=0.01,
-                                             key="L_unit_cabo" + str(k), label_visibility="collapsed") * 1e-6
-    # ii = ii + 1
-    # with cols[ii]:
-    #     L_unit_barra[k] = st.number_input("$L'_{\\rm barra} {\\rm \\left[{\\mu H}/{m} \\right]}$",
-    #                                       min_value=0.0, max_value=100.0, value=0.00, step=0.01,
-    #                                       key="L_unit_barra" + str(k)) * 1e-6
+        comp_cabo_input = st.text_input(
+            "$\\ell_{\\rm cable}{\\rm [m]}$",
+            value=format_input(0.0, language_key),
+            key="comp_cabo" + str(k),
+            label_visibility="visible" if k == 1 else "collapsed"
+        )
+        comp_cabo[k] = parse_input(comp_cabo_input, language_key) if comp_cabo_input else None
+
     ii = ii + 1
     with cols[ii]:
-        if k == 1:
-            L_capacitor[k] = st.number_input("$L_{\\rm capacitor} {\\rm \\left[{\\mu H} \\right]}$",
-                                             min_value=0.0, max_value=100.0, value=5.00, step=0.01,
-                                             key="L_capacitor" + str(k), label_visibility="visible") * 1e-6
-        else:
-            L_capacitor[k] = st.number_input("$L_{\\rm capacitor} {\\rm \\left[{\\mu H} \\right]}$",
-                                             min_value=0.0, max_value=100.0, value=5.00, step=0.01,
-                                             key="L_capacitor" + str(k), label_visibility="collapsed") * 1e-6
+        L_unit_cabo_input = st.text_input(
+            "$L'_{\\rm cable} {\\rm \\left[{\\mu H}/{m} \\right]}$",
+            value=format_input(0.00, language_key),
+            key="L_unit_cabo" + str(k),
+            label_visibility="visible" if k == 1 else "collapsed"
+        )
+        L_unit_cabo[k] = parse_input(L_unit_cabo_input, language_key) * 1e-6 if L_unit_cabo_input else None
+
     ii = ii + 1
     with cols[ii]:
-        if k == 1:
-            L_reator[k] = st.number_input("$L_{\\rm reator} {\\rm \\left[{\\mu H} \\right]}$",
-                                          min_value=0.1, max_value=10000.0, value=INDUTOR_DEFAULT, step=1.0,
-                                          key="L_reator" + str(k), label_visibility="visible") * 1e-6
-        else:
-            L_reator[k] = st.number_input("$L_{\\rm reator} {\\rm \\left[{\\mu H} \\right]}$",
-                                          min_value=0.1, max_value=10000.0, value=INDUTOR_DEFAULT, step=1.0,
-                                          key="L_reator" + str(k), label_visibility="collapsed") * 1e-6
+        L_capacitor_input = st.text_input(
+            "$L_{\\rm capacitor} {\\rm \\left[{\\mu H} \\right]}$",
+            value=format_input(5.00, language_key),
+            key="L_capacitor" + str(k),
+            label_visibility="visible" if k == 1 else "collapsed"
+        )
+        L_capacitor[k] = parse_input(L_capacitor_input, language_key) * 1e-6 if L_capacitor_input else None
+
+    ii = ii + 1
+    with cols[ii]:
+        L_reator_input = st.text_input(
+            "$L_{\\rm reactor} {\\rm \\left[{\\mu H} \\right]}$",
+            value=format_input(INDUTOR_DEFAULT, language_key),
+            key="L_reator" + str(k),
+            label_visibility="visible" if k == 1 else "collapsed"
+        )
+        L_reator[k] = parse_input(L_reator_input, language_key) * 1e-6 if L_reator_input else None
 
 
-nome_arquivo_saida = f'Relatorio_Inrush_DAX_{REATIVOS_DEFAULT}kVAr_{TENSAO_DEFAULT}kV_uH{INDUTOR_DEFAULT}'
+
+
+
+
+
 # ===============================================================================================
 # === serve para o isolado e o back-to-back
 soma_Q_3f = sum(Q_3f)
@@ -209,92 +183,62 @@ den_i = L_eq_isolado * w_isolado
 i_pico_inicial_isolado = FC * num_i / den_i
 
 # === back-to-back ===
-df, i_curto, i_pico_inicial, sigma, omega, t, i_pico_inicial_list = calcular_back_to_back(
-    C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isolado, i_pico_inicial_isolado,
-    nr_bancos, Q_3f, Q_1f, V_ff, X, L_reator
-)
+df, i_curto, i_pico_inicial, sigma, omega, t, i_pico_inicial_list = \
+    calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, \
+                          V_fn, FC, I_fn, w_isolado, i_pico_inicial_isolado, \
+                          nr_bancos, Q_3f, Q_1f, V_ff, X, L_reator
+    )
 
 
 i_pico_inicial_todos_pu = np.array([i_pico_inicial_isolado] + i_pico_inicial_list) / (I_fn * np.sqrt(2))
-# =====================================================================================================
 
-fig = go.Figure()
 
-fig.add_trace(go.Scatter(
-    x=t * 1e3,
-    y=i_curto / 1e3,
-    name="Instantânea",
-    line=dict(shape='linear', color='rgb(0, 0, 255)', width=2)
-))
-
-fig.add_trace(go.Scatter(
-    x=t * 1e3,
-    y=i_pico_inicial * np.exp(-sigma * t) / 1e3,
-    name="Envelope",
-    line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
-    connectgaps=True)
-)
-
-fig.add_trace(go.Scatter(
-    x=t * 1e3,
-    y=-i_pico_inicial * np.exp(-sigma * t) / 1e3,
-    name="Envelope",
-    line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
-    connectgaps=True)
-)
-
-fig.add_trace(go.Scatter(
-    x=t * 1e3,
-    y=i_pico_inicial * np.sin(2 * np.pi * f_fund * t) / 1e3,
-    name="Referência 60 Hz",
-    line=dict(shape='linear', color='rgb(0.2, 0.2, 0.2)', width=0.5),
-    connectgaps=True)
-)
-
-fig.update_layout(legend_title_text='Corrente:', title_text="Inrush Banco de Capacitores",
-                  xaxis_title=r"Tempo [ms]", yaxis_title="Corrente [kA]")
+# Gera o gráfico
+fig = plot_inrush(t, i_curto, i_pico_inicial, sigma, f_fund, text)
 st.plotly_chart(fig, use_container_width=True)
 
-# coluna0, coluna1 = st.columns([1, 1])
 
-# with coluna0:
+
+
 st.markdown(text["results"])
-st.write(text["nominal_current"], EngNumber(I_fn[0]), "A")
+
+st.write(text["nominal_current"], format_input(I_fn[0], language_key), "A")
 st.markdown(text["for_single_bank"])
-
 corrente_pico_bancos_isolado = i_pico_inicial_isolado / (I_fn[0] * np.sqrt(2))
-
-st.write(text["peak_current_energization"], EngNumber(i_pico_inicial_isolado), "${\\rm A}$,$~$que corresponde a", np.round(corrente_pico_bancos_isolado, 1), "$\\times I_{\\rm{nominal}}$")
-st.write(text["oscillation_frequency"], EngNumber(w_isolado / (2 * np.pi)), "${\\rm Hz}$, que corresponde a", np.round(w_isolado / w_fund, 1), "$\\times f_1$")
+st.write(text["peak_current_energization"], format_input(i_pico_inicial_isolado, language_key), "${\\rm A}$   (", format_input(np.round(corrente_pico_bancos_isolado, 1), language_key), "$\\times I_{\\rm{rated}}$)")
+st.write(text["oscillation_frequency"], format_input(w_isolado / (2 * np.pi), language_key), "${\\rm Hz}$   (", format_input(np.round(w_isolado / w_fund, 1), language_key), "$\\times f_1$)")
 
 st.markdown(text["for_bank_with_others_energized"])
-
 corrente_pico_bancos_back_to_back = i_pico_inicial / (I_fn * np.sqrt(2))
-st.write(text["peak_current_energization"], EngNumber(i_pico_inicial), "${\\rm A}$, que corresponde a", np.round(corrente_pico_bancos_back_to_back.max(), 1), "$\\times I_{\\rm{nominal}}$")
-
+st.write(text["peak_current_energization"], format_input(i_pico_inicial, language_key), "${\\rm A}$   (", format_input(np.round(corrente_pico_bancos_back_to_back.max(), 1), language_key), "$\\times I_{\\rm{rated}}$)")
 freq_oscilacao = omega / (2 * np.pi)
+st.write(text["oscillation_frequency"], str(int(freq_oscilacao)), "${\\rm Hz}$   (", format_input(np.round(omega / w_fund, 1), language_key), "$\\times f_1$)")
 
-st.write(text["oscillation_frequency"], EngNumber(freq_oscilacao), "${\\rm Hz}$, ", np.round(omega / w_fund, 1), "$\\times f_1$")
 
-# st.write("Harmônico de Oscilação = ", EngNumber(omega / w_fund))
 
-# with coluna1:
+
+
 st.markdown(text["conclusion"])
+
 st.markdown(text["conclusion_text"])
 
-temp = max(corrente_pico_bancos_isolado, corrente_pico_bancos_back_to_back.max())
+maxima_corrente_de_pico_dos_bancos = max(corrente_pico_bancos_isolado, corrente_pico_bancos_back_to_back.max())
 
-if temp < 100 and freq_oscilacao < 4250:
-    conclusao1 = (text["adequate_reactor"] + str(EngNumber(temp)) + "$\\le 100$ e $f_{osc} = $" +
-                  str(EngNumber(freq_oscilacao)) + "Hz < 4,25 kHz, " +
+maxima_corrente_str = config.format_number(maxima_corrente_de_pico_dos_bancos, language_key)
+freq_oscilacao_str  = str(int(freq_oscilacao))
+
+if maxima_corrente_de_pico_dos_bancos < 100 and freq_oscilacao < 4250:
+    conclusao1 = (text["adequate_reactor"] + maxima_corrente_str + "$\\le 100$ e $f_{\\rm osc} = $" +
+                  freq_oscilacao_str + "Hz < 4,25 kHz, " +
                   "IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
 else:
-    conclusao1 = (text["not_adequate_reactor"] + str(EngNumber(temp)) + "$> 100$ ou $f_{osc} = $" +
-                  str(EngNumber(freq_oscilacao)) + "Hz > 4,25 kHz, " +
+    conclusao1 = (text["not_adequate_reactor"] + maxima_corrente_str + "$> 100$ ou $f_{\\rm osc} = $" +
+                  freq_oscilacao_str + "Hz > 4,25 kHz, " +
                   "IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).")
 
+
 st.write(conclusao1)
-cem = temp
+
 
 st.markdown(text["bibliography"])
 col_bib1, col_bib2 = st.columns([1, 25])
@@ -323,98 +267,12 @@ with col_bib2:
     NBR 5282 Capacitores de potência em derivação para sistema de tensão nominal acima de 1000 V
     """
 
-# ===============================================================================================================
-# RELATORIO
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import datetime as dt
-# from docx2pdf import convert
-
-t = np.asarray(t)
-i_curto = i_pico_inicial * np.exp(-sigma * t) * np.sin(omega * t)
-mpl.rcParams.update({'font.size': 8})
-cm = 1 / 2.54
-fig_mpl, ax_mpl = plt.subplots(figsize=(16 * cm, 7 * cm))
-ax_mpl.plot(t * 1e3, i_curto / 1e3, label='$i(t)$', color='blue', lw=1.0)
-ax_mpl.plot(t * 1e3, i_pico_inicial * np.exp(-sigma * t) / 1e3, color='gray', ls='--', lw=0.5)
-ax_mpl.plot(t * 1e3, -i_pico_inicial * np.exp(-sigma * t) / 1e3, color='gray', ls='--', lw=0.5)
-ax_mpl.plot(t * 1e3, i_pico_inicial * np.sin(2 * np.pi * f_fund * t) / 1e3, label='$60 {\\rm Hz}$', color='gray',
-            alpha=0.5, lw=1.0)
-ax_mpl.set_xlabel('Tempo [ms]')
-ax_mpl.set_ylabel('Corrente [kA]')
-ax_mpl.legend()
-fig_mpl.savefig('Correntes.png', bbox_inches='tight', dpi=300)
-
-
-if st.button(text["latex_report"]):
-    arquivo_original_tex = 'TEMPLATE_Relatorio_Inrush_DAX.tex'
-    arquivo_copiado_tex = nome_arquivo_saida+'.tex'
-    shutil.copy(arquivo_original_tex, arquivo_copiado_tex)
-
-    # Valores a serem substituídos
-    formatter_VAr = EngFormatter(places=1, unit='VAr')
-    formatter_V = EngFormatter(places=1, unit='V')
-    formatter_A = EngFormatter(places=1, unit='A')
-    formatter_H = EngFormatter(places=1)
-    formatter_Hz = EngFormatter(places=1)
-    formatter_pu = EngFormatter(places=1)
-
-    valores = {
-        "potencia_reativa_do_banco": formatter_VAr.format_data(soma_Q_3f),
-        "tensao_trifasica": formatter_V.format_data(V_ff),
-        "tensao_monofasica": formatter_V.format_data(V_fn),
-        "corrente_de_curto": formatter_A.format_data(I_curto_circuito),
-        "indutancia_escolhida": formatter_H.format_data(1e6*L_reator[0]),
-        "corrente_pico":        formatter_A.format_data(i_pico_inicial),
-        "frequencia_oscilacao": formatter_Hz.format_data(omega / (2 * np.pi)),
-        "inrush_inominal":      formatter_pu.format_data(i_pico_inicial_todos_pu.max()),####
-        "conclusao1": conclusao1,
-        "cem": formatter_pu.format_data(cem)
-    }
-
-    # Substituindo os valores no arquivo copiado
-    substituir_valores(arquivo_copiado_tex, valores)
-    # Adiconando tabela de dados
-    latex_table = df.to_latex(header=True, index=True, float_format="%.2f")
-    with open(arquivo_copiado_tex, 'r', encoding='utf-8') as file:
-        content = file.read()
-    updated_content = content.replace('% INSERT_TABLE_HERE', latex_table)
-    with open(arquivo_copiado_tex, 'w', encoding='utf-8') as file:
-        file.write(updated_content)
-
-    # Criando um arquivo ZIP em memória
-    zip_buffer = io.BytesIO()
-
-    # Lista de arquivos que você quer zipar
-    lista_para_zipar = ["Correntes.png", "Sistema.png", "logo.png", "Picture1.png", nome_arquivo_saida + ".tex"]
-
-    # Nome do arquivo ZIP de destino
-    zip_filename = nome_arquivo_saida + ".zip"
-
-    # Cria o arquivo ZIP em memória
-    with ZipFile(zip_buffer, 'w') as z:
-        for file in lista_para_zipar:
-            # Adiciona cada arquivo especificado na lista ao ZIP
-            with open(file, "rb") as f:
-                z.writestr(file, f.read())
-
-    # Move o ponteiro do buffer para o início
-    zip_buffer.seek(0)
-
-    # Criando o botão de download do arquivo ZIP
-    st.download_button(
-        label="Download ZIP",
-        data=zip_buffer,
-        file_name=zip_filename,
-        mime="application/zip"
-    )
-
 st.markdown(text["development"])
 colunas = st.columns(2)
 with colunas[0]:
     """
     Angelo A. Hafner\\
-    Engenheiro Eletricista\\
+    Electrical Engineer\\
     CONFEA: 2.500.821.919\\
     CREA/SC: 045.776-5\\
     aah@dax.energy
@@ -426,4 +284,45 @@ with colunas[1]:
     Mobile: +55 41 99940-3744\\
     tm@dax.energy
     """
+# ===============================================================================================================
+import relatorio
+base_filename = 'TEMPLATE_Relatorio_Inrush_DAX'
+arquivo_original_tex = f"{base_filename}_{language_key}.tex"
+relatorio.gerar_figura(t, i_pico_inicial, sigma, omega, f_fund)
+nome_arquivo_saida = f'Report_Inrush_DAX_{REATIVOS_DEFAULT}kVAr_{TENSAO_DEFAULT}kV_uH{INDUTOR_DEFAULT}'
+
+
+if st.button(text["latex_report"]):
+    arquivo_original_tex = f"{base_filename}_{language_key}.tex"
+    arquivo_copiado_tex = nome_arquivo_saida+'.tex'
+    shutil.copy(arquivo_original_tex, arquivo_copiado_tex)
+
+    valores = relatorio.format_values(
+        soma_Q_3f=soma_Q_3f,
+        V_ff=V_ff,
+        V_fn=V_fn,
+        I_curto_circuito=I_curto_circuito,
+        L_reator=L_reator,
+        i_pico_inicial=i_pico_inicial,
+        omega=omega,
+        i_pico_inicial_todos_pu=i_pico_inicial_todos_pu,
+        conclusao1=conclusao1,
+        maxima_corrente_de_pico_dos_bancos=maxima_corrente_de_pico_dos_bancos
+    )
+
+    zip_buffer, zip_filename = relatorio.process_latex_and_create_zip(
+        arquivo_copiado_tex=arquivo_copiado_tex,
+        valores=valores,
+        df=df,
+        nome_arquivo_saida=nome_arquivo_saida
+    )
+
+    st.download_button(
+        label="Download ZIP",
+        data=zip_buffer,
+        file_name=zip_filename,
+        mime="application/zip"
+    )
+
+    st.write(text["use_xelatex_compiler"])
 

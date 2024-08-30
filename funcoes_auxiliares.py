@@ -1,14 +1,54 @@
 
-
 # ===================================================================================
-def substituir_valores(arquivo_tex, valores):
-    with open(arquivo_tex, 'r') as file:
+# Functions needed for substitute poit by comma in decimal separators
+# ===================================================================================
+# Função para converter o valor de string para float, dependendo do locale
+def parse_input(value_str, language_key):
+    try:
+        if language_key == 'en':
+            return float(value_str)
+        else:
+            return float(value_str.replace('.', '').replace(',', '.'))
+    except ValueError:
+        return None
+
+# Função para formatar o valor para exibição no input, conforme o locale
+def format_input(value, language_key):
+    if value is None:
+        return ""
+    if language_key == 'en':
+        return f"{value:.1f}"
+    else:
+        return f"{value:.1f}".replace('.', ',')
+
+
+def custom_slider(label, min_value, max_value, value, step, language_key):
+    import streamlit as st
+    # Exibindo o slider com o valor original (ponto como separador decimal)
+    raw_value = st.slider(label, min_value, max_value, value, step=step)
+
+    # Convertendo o valor para a string formatada com vírgula se necessário
+    if language_key == 'en':
+        formatted_value = raw_value
+    else:
+        formatted_value = float(format_input(raw_value, language_key))
+
+    return formatted_value
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+def substituir_valores(arquivo_copiado_tex, valores):
+    with open(arquivo_copiado_tex, 'r', encoding='utf-8') as file:
         filedata = file.read()
 
+    # Substitua os valores no arquivo
     for chave, valor in valores.items():
-        filedata = filedata.replace('{{' + chave + '}}', str(valor))
+        filedata = filedata.replace(chave, valor)
 
-    with open(arquivo_tex, 'w') as file:
+    # Salve o arquivo novamente
+    with open(arquivo_copiado_tex, 'w', encoding='utf-8') as file:
         file.write(filedata)
 # ===================================================================================
 # ===================================================================================
@@ -111,12 +151,48 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
 # ===================================================================================
 # ===================================================================================
 
+import plotly.graph_objects as go
+import numpy as np
 
+def plot_inrush(t, i_curto, i_pico_inicial, sigma, f_fund, text):
+    fig = go.Figure()
 
+    fig.add_trace(go.Scatter(
+        x=t * 1e3,
+        y=i_curto / 1e3,
+        name=text["instantaneous"],
+        line=dict(shape='linear', color='rgb(0, 0, 255)', width=2)
+    ))
 
+    fig.add_trace(go.Scatter(
+        x=t * 1e3,
+        y=i_pico_inicial * np.exp(-sigma * t) / 1e3,
+        name=text["envelope"],
+        line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
+        connectgaps=True)
+    )
 
+    fig.add_trace(go.Scatter(
+        x=t * 1e3,
+        y=-i_pico_inicial * np.exp(-sigma * t) / 1e3,
+        name=text["envelope"],
+        line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
+        connectgaps=True)
+    )
 
+    fig.add_trace(go.Scatter(
+        x=t * 1e3,
+        y=i_pico_inicial * np.sin(2 * np.pi * f_fund * t) / 1e3,
+        name=text["reference_60hz"],
+        line=dict(shape='linear', color='rgb(0.2, 0.2, 0.2)', width=0.5),
+        connectgaps=True)
+    )
 
+    fig.update_layout(
+        legend_title_text=text["current_label"],
+        title_text=text["title"],
+        xaxis_title=text["time_label"],
+        yaxis_title=text["current_axis_label"]
+    )
 
-
-
+    return fig
