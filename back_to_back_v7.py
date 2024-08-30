@@ -409,7 +409,7 @@ if st.button(text["latex_report"]):
         mime="application/zip"
     )
 
-st.markdown('#### Desenvolvimento')
+st.markdown(text["development"])
 colunas = st.columns(2)
 with colunas[0]:
     """

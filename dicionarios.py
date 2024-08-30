@@ -20,7 +20,8 @@ translations = {
         "adequate_reactor": "Adequate reactor, as $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "Reactor NOT adequate, as $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### Bibliography",
-        "latex_report": "Latex Report (ZIP)"
+        "latex_report": "Latex Report (ZIP)",
+        "development": "#### Development"
     },
     "pt": {
         "title": "Resposta transitória da corrente de energização de capacitores",
@@ -42,7 +43,8 @@ translations = {
         "adequate_reactor": "Reator adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "Reator NÃO adequado, pois $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### Bibliografia",
-        "latex_report": "Relatório Latex (ZIP)"
+        "latex_report": "Relatório Latex (ZIP)",
+        "development": "#### Desenvolvimento"
     },
     "zh": {
         "title": "电容器充电电流的瞬态响应",
@@ -64,7 +66,8 @@ translations = {
         "adequate_reactor": "合适的反应堆，因为 $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "反应堆不合适，因为 $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### 参考文献",
-        "latex_report": "LaTeX 报告 (ZIP)"
+        "latex_report": "LaTeX 报告 (ZIP)",
+        "development": "#### 发展"
     },
     "es": {
         "title": "Respuesta transitoria de la corriente de energización de condensadores",
@@ -86,7 +89,8 @@ translations = {
         "adequate_reactor": "Reactor adecuado, ya que $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "Reactor NO adecuado, ya que $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### Bibliografía",
-        "latex_report": "Informe Latex (ZIP)"
+        "latex_report": "Informe Latex (ZIP)",
+        "development": "#### Desarrollo"
     },
     "fr": {
         "title": "Réponse transitoire du courant d'enclenchement des condensateurs",
@@ -108,7 +112,8 @@ translations = {
         "adequate_reactor": "Réacteur adéquat, car $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "Réacteur NON adéquat, car $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### Bibliographie",
-        "latex_report": "Rapport Latex (ZIP)"
+        "latex_report": "Rapport Latex (ZIP)",
+        "development": "#### Développement"
     },
     "de": {
         "title": "Übergangsantwort des Einschaltstroms von Kondensatoren",
@@ -130,6 +135,7 @@ translations = {
         "adequate_reactor": "Geeigneter Reaktor, da $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "not_adequate_reactor": "Reaktor NICHT geeignet, da $\\dfrac{I_{\\rm inrush}}{I_{\\rm nominal}} = $",
         "bibliography": "#### Bibliographie",
-        "latex_report": "LaTeX-Bericht (ZIP)"
+        "latex_report": "LaTeX-Bericht (ZIP)",
+        "development": "#### Entwicklung"
     }
 }
