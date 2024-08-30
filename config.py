@@ -16,7 +16,7 @@ def configure_language_and_locale():
     # Criação de uma lista de idiomas a partir do dicionário
     language_list = list(language_options.values())
 
-    # Caixa de seleção mais sofisticada para escolha de idioma
+    # Caixa de seleção para escolha de idioma
     selected_language = st.selectbox(
         "Choose Language / Escolha o idioma / 选择语言 / Sprache wählen",
         language_list
@@ -28,18 +28,17 @@ def configure_language_and_locale():
     # Acesso ao dicionário de traduções com a chave selecionada
     text = translations[language_key]
 
-    # Configuração do locale
-    if language_key == 'en':
-        # Inglês dos EUA - Ponto como separador decimal
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-    elif language_key in ['de', 'fr', 'pt', 'it', 'es']:
-        # Alemanha, França, Brasil, Itália, Espanha - Vírgula como separador decimal
-        locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
-    else:
-        # Outros idiomas
-        locale.setlocale(locale.LC_ALL, '')
+    # Função de formatação de números dependendo do idioma
+    def format_number(value):
+        if language_key == 'en':
+            # Use dot as decimal separator
+            return f"{value:,.2f}"
+        else:
+            # Use comma as decimal separator
+            return f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    return text, language_key
+    return text, language_key, format_number
+
 
 
 

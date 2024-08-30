@@ -20,7 +20,7 @@ from funcoes_auxiliares import *
 
 
 # Set the language and locale
-text, language_key = config.configure_language_and_locale()
+text, language_key, format_number = config.configure_language_and_locale()
 
 st.markdown(text["title"])
 
