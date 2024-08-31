@@ -154,19 +154,19 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
 import plotly.graph_objects as go
 import numpy as np
 
-def plot_inrush(t, i_curto, i_pico_inicial, sigma, f_fund, text):
+def plot_inrush(t, i_curto, i_pico_inicial, omega, sigma, f_fund, text, X_curto_circuito, X, I_fn):
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=i_curto / 1e3,
+        y=i_curto / I_fn.max() + np.cos(f_fund*t+np.pi/2),
         name=text["instantaneous"],
         line=dict(shape='linear', color='rgb(0, 0, 255)', width=2)
     ))
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=i_pico_inicial * np.exp(-sigma * t) / 1e3,
+        y=i_pico_inicial * np.exp(-sigma * t) / I_fn.max(),
         name=text["envelope"],
         line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
         connectgaps=True)
@@ -174,7 +174,7 @@ def plot_inrush(t, i_curto, i_pico_inicial, sigma, f_fund, text):
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=-i_pico_inicial * np.exp(-sigma * t) / 1e3,
+        y=-i_pico_inicial * np.exp(-sigma * t) / I_fn.max(),
         name=text["envelope"],
         line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
         connectgaps=True)
@@ -182,17 +182,24 @@ def plot_inrush(t, i_curto, i_pico_inicial, sigma, f_fund, text):
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=i_pico_inicial * np.sin(2 * np.pi * f_fund * t) / 1e3,
+        y=(1 - X_curto_circuito.max() / X.max()) * i_curto/i_curto.max() + np.cos(2 * np.pi * f_fund * t),
         name=text["reference_60hz"],
         line=dict(shape='linear', color='rgb(0.2, 0.2, 0.2)', width=0.5),
-        connectgaps=True)
-    )
+        connectgaps=True,
+        yaxis='y2'  # Especifica que esse traço está no eixo secundário
+    ))
 
     fig.update_layout(
         legend_title_text=text["current_label"],
         title_text=text["title"],
         xaxis_title=text["time_label"],
-        yaxis_title=text["current_axis_label"]
+        yaxis_title=text["current_axis_label"],
+        yaxis2=dict(
+            overlaying='y',  # Colocar o eixo secundário sobre o eixo primário
+            side='right',  # Eixo secundário à direita
+            showgrid=False,  # Opcional: remover a grade do eixo secundário
+            range=[-1.5, 1.5]  # Definir o intervalo do eixo secundário entre -1.5 e 1.5
+        )
     )
 
     return fig

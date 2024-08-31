@@ -28,7 +28,7 @@ translations = {
         "reference_60hz": "Reference 60 Hz",
         "current_label": "Current:",
         "time_label": "Time [ms]",
-        "current_axis_label": "Current [kA]",
+        "current_axis_label": "Current [pu]",
         "use_xelatex_compiler": "use the xelatex compiler",
     },
     "pt": {
@@ -59,7 +59,7 @@ translations = {
         "reference_60hz": "Referência 60 Hz",
         "current_label": "Corrente:",
         "time_label": "Tempo [ms]",
-        "current_axis_label": "Corrente [kA]",
+        "current_axis_label": "Corrente [pu]",
         "use_xelatex_compiler": "usar o compilador xelatex",
     },
     "zh": {
@@ -90,7 +90,7 @@ translations = {
         "reference_60hz": "参考 60 Hz",
         "current_label": "电流:",
         "time_label": "时间 [ms]",
-        "current_axis_label": "电流 [kA]",
+        "current_axis_label": "电流 [pu]",
         "use_xelatex_compiler": "使用xelatex编译器",
     },
     "es": {
@@ -121,7 +121,7 @@ translations = {
         "reference_60hz": "Referencia 60 Hz",
         "current_label": "Corriente:",
         "time_label": "Tiempo [ms]",
-        "current_axis_label": "Corriente [kA]",
+        "current_axis_label": "Corriente [pu]",
         "use_xelatex_compiler": "usar el compilador xelatex"
     },
     "fr": {
@@ -152,7 +152,7 @@ translations = {
         "reference_60hz": "Référence 60 Hz",
         "current_label": "Courant:",
         "time_label": "Temps [ms]",
-        "current_axis_label": "Courant [kA]",
+        "current_axis_label": "Courant [pu]",
         "use_xelatex_compiler": "utiliser le compilateur xelatex",
     },
     "de": {
@@ -183,7 +183,7 @@ translations = {
         "reference_60hz": "Referenz 60 Hz",
         "current_label": "Strom:",
         "time_label": "Zeit [ms]",
-        "current_axis_label": "Strom [kA]",
+        "current_axis_label": "Strom [pu]",
         "use_xelatex_compiler": "den xelatex-Compiler verwenden",
     }
 }
