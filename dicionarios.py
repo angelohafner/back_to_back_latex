@@ -29,6 +29,7 @@ translations = {
         "current_label": "Current:",
         "time_label": "Time [ms]",
         "current_axis_label": "Current [pu]",
+        "voltage_axis_label": "Voltage [pu]",  # Adicionado
         "use_xelatex_compiler": "use the xelatex compiler",
     },
     "pt": {
@@ -60,6 +61,7 @@ translations = {
         "current_label": "Corrente:",
         "time_label": "Tempo [ms]",
         "current_axis_label": "Corrente [pu]",
+        "voltage_axis_label": "Tensão [pu]",  # Adicionado
         "use_xelatex_compiler": "usar o compilador xelatex",
     },
     "zh": {
@@ -91,6 +93,7 @@ translations = {
         "current_label": "电流:",
         "time_label": "时间 [ms]",
         "current_axis_label": "电流 [pu]",
+        "voltage_axis_label": "电压 [pu]",  # Adicionado
         "use_xelatex_compiler": "使用xelatex编译器",
     },
     "es": {
@@ -122,6 +125,7 @@ translations = {
         "current_label": "Corriente:",
         "time_label": "Tiempo [ms]",
         "current_axis_label": "Corriente [pu]",
+        "voltage_axis_label": "Voltaje [pu]",  # Adicionado
         "use_xelatex_compiler": "usar el compilador xelatex"
     },
     "fr": {
@@ -153,6 +157,7 @@ translations = {
         "current_label": "Courant:",
         "time_label": "Temps [ms]",
         "current_axis_label": "Courant [pu]",
+        "voltage_axis_label": "Tension [pu]",  # Adicionado
         "use_xelatex_compiler": "utiliser le compilateur xelatex",
     },
     "de": {
@@ -184,6 +189,7 @@ translations = {
         "current_label": "Strom:",
         "time_label": "Zeit [ms]",
         "current_axis_label": "Strom [pu]",
+        "voltage_axis_label": "Spannung [pu]",  # Adicionado
         "use_xelatex_compiler": "den xelatex-Compiler verwenden",
     }
 }

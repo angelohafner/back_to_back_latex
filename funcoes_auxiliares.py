@@ -1,3 +1,5 @@
+import streamlit as st
+
 
 # ===================================================================================
 # Functions needed for substitute poit by comma in decimal separators
@@ -74,7 +76,7 @@ import pandas as pd
 from matplotlib.ticker import EngFormatter
 
 def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isolado, i_pico_inicial_isolado, nr_bancos,
-                          Q_3f, Q_1f, V_ff, X, L_reator):
+                          Q_3f, Q_1f, V_ff, X, L_reator, X_curto_circuito, f_fund):
 
     i_pico_inicial_list = []
     sigma_list = []
@@ -98,7 +100,7 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
         sigma_list.append(R_EQ_PARA_AMORTECIMENTO / (2 * L_eq))
 
     # Converting Lists to NumPy Arrays and Adding Initial Values
-    i_pico_inicaL_todos_pu = np.array([i_pico_inicial_isolado] + i_pico_inicial_list) / (I_fn * np.sqrt(2))
+    i_pico_inicial_todos_pu = np.array([i_pico_inicial_isolado] + i_pico_inicial_list) / (I_fn * np.sqrt(2))
     omega_list_todos = np.array([w_isolado] + omega_list)
 
     # Selecting the Final Values from the List
@@ -106,9 +108,11 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
     sigma = sigma_list[-1]
     omega = omega_list[-1]
 
-    # Setting the Time and Calculating the Short-Circuit Current
-    t = np.linspace(0, 1 / 60, 1 * int(2 ** 12))
-    i_curto = i_pico_inicial * np.exp(-sigma * t) * np.sin(omega * t)
+    # Setting the Time and Calculating the Short-Circuit Current for the plot
+    t = np.linspace(-0.25/60, 1 / 60, 1 * int(2 ** 14))
+    i_curto = np.where(t > 0, i_pico_inicial * np.exp(-sigma * t) * np.sin(omega * t), 0)
+    envelope = np.where(t > 0, i_pico_inicial * np.exp(-sigma * t), 0)
+    tensao_transitoria = np.cos(2 * np.pi * f_fund * t) - X_curto_circuito * i_curto / V_fn
 
     # Formatting the Data for the DataFrame
     formatter = EngFormatter(unit='VAr', places=1)
@@ -126,7 +130,7 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
     formatter = EngFormatter(unit='H', places=1)
     arrayL1f_eng = [formatter.format_data(x) for x in L_reator]
     formatter = EngFormatter(places=1)
-    array_i_pico_inicaL_todos_pu_eng = [formatter.format_data(x) for x in i_pico_inicaL_todos_pu]
+    array_i_pico_inicial_todos_pu_eng = [formatter.format_data(x) for x in i_pico_inicial_todos_pu]
     formatter = EngFormatter(unit='Hz', places=1)
     array_frequencia_Hz_list_todos_eng = [formatter.format_data(x) for x in omega_list_todos / (2 * np.pi)]
 
@@ -140,13 +144,13 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
         r'$X_{1\phi}$': arrayX1f_eng,
         r'$C_{1\phi}$': arrayC1f_eng,
         r'$L_{1\phi}$': arrayL1f_eng,
-        '$I_{p}/I_{n}$': array_i_pico_inicaL_todos_pu_eng,
+        '$I_{p}/I_{n}$': array_i_pico_inicial_todos_pu_eng,
         '$f_{0}$': array_frequencia_Hz_list_todos_eng,
     }
 
     df = pd.DataFrame(data)
 
-    return df, i_curto, i_pico_inicial, sigma, omega, t, i_pico_inicial_list
+    return df, i_curto, i_pico_inicial, sigma, omega, t, i_pico_inicial_list, envelope, tensao_transitoria
 
 # ===================================================================================
 # ===================================================================================
@@ -154,19 +158,19 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
 import plotly.graph_objects as go
 import numpy as np
 
-def plot_inrush(t, i_curto, i_pico_inicial, omega, sigma, f_fund, text, X_curto_circuito, X, I_fn):
+def plot_inrush(t, i_curto, envelope, text, I_fn, tensao_transitoria):
     fig = go.Figure()
-
+    den = np.sqrt(2)*I_fn.max()
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=i_curto / I_fn.max() + np.cos(f_fund*t+np.pi/2),
+        y=i_curto / den,
         name=text["instantaneous"],
         line=dict(shape='linear', color='rgb(0, 0, 255)', width=2)
     ))
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=i_pico_inicial * np.exp(-sigma * t) / I_fn.max(),
+        y=envelope / den,
         name=text["envelope"],
         line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
         connectgaps=True)
@@ -174,7 +178,7 @@ def plot_inrush(t, i_curto, i_pico_inicial, omega, sigma, f_fund, text, X_curto_
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=-i_pico_inicial * np.exp(-sigma * t) / I_fn.max(),
+        y=-envelope / den,
         name=text["envelope"],
         line=dict(shape='linear', color='rgb(0, 0, 0)', width=1, dash='dot'),
         connectgaps=True)
@@ -182,19 +186,24 @@ def plot_inrush(t, i_curto, i_pico_inicial, omega, sigma, f_fund, text, X_curto_
 
     fig.add_trace(go.Scatter(
         x=t * 1e3,
-        y=(1 - X_curto_circuito.max() / X.max()) * i_curto/i_curto.max() + np.cos(2 * np.pi * f_fund * t),
+        y=tensao_transitoria,
         name=text["reference_60hz"],
-        line=dict(shape='linear', color='rgb(0.2, 0.2, 0.2)', width=0.5),
+        line=dict(shape='linear', color='rgb(0.0, 0.0, 0.0)', width=0.5),
         connectgaps=True,
         yaxis='y2'  # Especifica que esse traço está no eixo secundário
     ))
 
     fig.update_layout(
+        height=800,  # Aumenta a altura da figura
         legend_title_text=text["current_label"],
         title_text=text["title"],
         xaxis_title=text["time_label"],
         yaxis_title=text["current_axis_label"],
+        yaxis=dict(
+            range=[-150, 150]  # Define o intervalo fixo do eixo principal de -150 a +150
+        ),
         yaxis2=dict(
+            title_text=text["voltage_axis_label"],  # Define o rótulo do eixo secundário
             overlaying='y',  # Colocar o eixo secundário sobre o eixo primário
             side='right',  # Eixo secundário à direita
             showgrid=False,  # Opcional: remover a grade do eixo secundário
