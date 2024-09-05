@@ -86,9 +86,8 @@ df, i_curto, i_pico_inicial, sigma, omega, t, i_pico_inicial_list,envelope, tens
     )
 
 i_pico_inicial_todos_pu = np.array([i_pico_inicial_isolado] + i_pico_inicial_list) / (I_fn * np.sqrt(2))
-st.markdown(I_fn)
-st.markdown(i_pico_inicial)
-st.markdown(i_pico_inicial_todos_pu)
+# ===============================================================================================
+
 # Gera o gráfico
 fig = fa.plot_inrush(t, i_curto, envelope, text, I_fn, tensao_transitoria)
 st.plotly_chart(fig, use_container_width=True)

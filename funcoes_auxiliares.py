@@ -54,21 +54,21 @@ def substituir_valores(arquivo_copiado_tex, valores):
         file.write(filedata)
 # ===================================================================================
 # ===================================================================================
-from docx import Document
+# from docx import Document
 
-def substituir_valores_docx(arquivo_docx, valores):
-    # Carrega o documento Word
-    doc = Document(arquivo_docx)
-    
-    # Percorre cada parágrafo no documento
-    for para in doc.paragraphs:
-        for chave, valor in valores.items():
-            # Substitui as chaves pelos valores
-            if '{{' + chave + '}}' in para.text:
-                para.text = para.text.replace('{{' + chave + '}}', str(valor))
-    
-    # Salva o documento com as mudanças
-    doc.save(arquivo_docx)
+# def substituir_valores_docx(arquivo_docx, valores):
+#     # Carrega o documento Word
+#     doc = Document(arquivo_docx)
+#
+#     # Percorre cada parágrafo no documento
+#     for para in doc.paragraphs:
+#         for chave, valor in valores.items():
+#             # Substitui as chaves pelos valores
+#             if '{{' + chave + '}}' in para.text:
+#                 para.text = para.text.replace('{{' + chave + '}}', str(valor))
+#
+#     # Salva o documento com as mudanças
+#     doc.save(arquivo_docx)
 # ===================================================================================
 # ===================================================================================
 import numpy as np
@@ -109,7 +109,7 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
     omega = omega_list[-1]
 
     # Setting the Time and Calculating the Short-Circuit Current for the plot
-    t = np.linspace(-0.25/60, 1 / 60, 1 * int(2 ** 14))
+    t = np.linspace(-0.25/60, 0.75 / 60, 1 * int(2 ** 14))
     i_curto = np.where(t > 0, i_pico_inicial * np.exp(-sigma * t) * np.sin(omega * t), 0)
     envelope = np.where(t > 0, i_pico_inicial * np.exp(-sigma * t), 0)
     tensao_transitoria = np.cos(2 * np.pi * f_fund * t) - X_curto_circuito * i_curto / V_fn
@@ -194,7 +194,7 @@ def plot_inrush(t, i_curto, envelope, text, I_fn, tensao_transitoria):
     ))
 
     fig.update_layout(
-        height=800,  # Aumenta a altura da figura
+        height=600,  # Aumenta a altura da figura
         legend_title_text=text["current_label"],
         title_text=text["title"],
         xaxis_title=text["time_label"],
