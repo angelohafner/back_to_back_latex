@@ -94,14 +94,23 @@
 	
 	\section{Input data from the bank}
 	\begin{itemize}[label=\textendash]
-		\item Reactive power  = {{potencia_reativa_do_banco}}
-		\item Three-phase voltage  = {{tensao_trifasica}}
-		\item Single-phase voltage  = {{tensao_monofasica}}
-		\item Short-circuit current  = {{corrente_de_curto}}
+		\item Reactive power  = {{5.4 MVAr}}
+		\item Three-phase voltage  = {{18.0 kV}}
+		\item Single-phase voltage  = {{10.4 kV}}
+		\item Short-circuit current  = {{2.5 MA}}
 	\end{itemize}
 	
 	\begin{center}
-		% INSERT_TABLE_HERE
+		\begin{tabular}{lllllllllll}
+\toprule
+ & $Q_{3\phi}$ & $Q_{1\phi}$ & $V_{3\phi}$ & $V_{1\phi}$ & $I_{1\phi}$ & $X_{1\phi}$ & $C_{1\phi}$ & $L_{1\phi}$ & $I_{p}/I_{n}$ & $f_{0}$ \\
+\midrule
+0 & 1.8 MVAr & 600.0 kVAr & 18.0 kV & 10.4 kV & 57.7 A & 180.0 $\Omega$ & 17.68 µF & 100.0 µH & 97.5 & 3.5 kHz \\
+1 & 1.8 MVAr & 600.0 kVAr & 18.0 kV & 10.4 kV & 57.7 A & 180.0 $\Omega$ & 17.68 µF & 100.0 µH & 51.7 & 3.7 kHz \\
+2 & 1.8 MVAr & 600.0 kVAr & 18.0 kV & 10.4 kV & 57.7 A & 180.0 $\Omega$ & 17.68 µF & 100.0 µH & 69.0 & 3.7 kHz \\
+\bottomrule
+\end{tabular}
+
 	\end{center}
 	
 	
@@ -128,15 +137,15 @@
 		\label{fig:picture2}
 	\end{figure}
 	
-	The values obtained with the selected reactor ($L_{reator} = {{indutancia_escolhida}} \, \mu \rm{H} $) are:
+	The values obtained with the selected reactor ($L_{reator} = {{100.0}} \, \mu \rm{H} $) are:
 	\begin{itemize}[label=\textendash]
-		\item Peak current: {{corrente_pico}};
-		\item Oscillation Frequency: {{frequencia_oscilacao}}Hz;
-		\item Inrush current / Nominal current: {{inrush_inominal}}
+		\item Peak current: {{5.6 kA}};
+		\item Oscillation Frequency: {{3.7 k}}Hz;
+		\item Inrush current / Nominal current: {{97.5}}
 	\end{itemize}
 	
 	\section{Conclusion}
-	{{conclusao1}}
+	{{Adequate reactor, as $\dfrac{I_{\rm inrush}}{I_{\rm nominal}} = $97.47$\le 100$ e $f_{\rm osc} = $3693Hz < 4,25 kHz, IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).}}
 	
 	\section{References}
 	

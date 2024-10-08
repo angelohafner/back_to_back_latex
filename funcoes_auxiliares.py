@@ -19,9 +19,9 @@ def format_input(value, language_key):
     if value is None:
         return ""
     if language_key == 'en':
-        return f"{value:.1f}"
+        return f"{value:.2f}"
     else:
-        return f"{value:.1f}".replace('.', ',')
+        return f"{value:.2f}".replace('.', ',')
 
 
 def custom_slider(label, min_value, max_value, value, step, language_key):
@@ -115,7 +115,7 @@ def calcular_back_to_back(C, L, R_EQ_PARA_AMORTECIMENTO, V_fn, FC, I_fn, w_isola
     tensao_transitoria = np.cos(2 * np.pi * f_fund * t) - X_curto_circuito * i_curto / V_fn
 
     # Formatting the Data for the DataFrame
-    formatter = EngFormatter(unit='VAr', places=1)
+    formatter = EngFormatter(unit='VAr', places=2)
     arrayQ3f_eng = [formatter.format_data(x) for x in Q_3f]
     arrayQ1f_eng = [formatter.format_data(x) for x in Q_1f]
     formatter = EngFormatter(unit='V', places=1)

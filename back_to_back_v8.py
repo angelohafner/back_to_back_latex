@@ -3,11 +3,12 @@ Angelo Alfredo Hafner
 aah@dax.energy
 """
 # cuidado
-INDUTOR_DEFAULT = 15.0
-REATIVOS_DEFAULT = 5.0
-TENSAO_DEFAULT = 13.8
-NUM_BANCOS_DEFAULT = 2
-CORRENTE_CURTO_DEFAULT = 1000.0
+INDUTOR_DEFAULT = 100.0
+REATIVOS_DEFAULT = 1.75
+TENSAO_DEFAULT = 15.0
+NUM_BANCOS_DEFAULT = 3
+CORRENTE_CURTO_DEFAULT = 2506.0
+FREQ_DEFAULT = 50.0
 R_EQ_PARA_AMORTECIMENTO = 0.1
 
 import config
@@ -27,9 +28,9 @@ st.markdown(text["title"])
 col0, col1, col2 = st.columns([2, 0.2, 8])
 with col0:
     # Input widgets using `st.text_input` to respect locale decimal separator
-    V_ff_input = st.text_input(text["voltage"], value=inputs_layout.format_input(13.8, language_key))
-    f_fund_input = st.text_input(text["frequency"], value=inputs_layout.format_input(60.0, language_key))
-    I_curto_circuito_input = st.text_input(text["short_circuit_current"], value=inputs_layout.format_input(20.0, language_key))
+    V_ff_input = st.text_input(text["voltage"], value=inputs_layout.format_input(TENSAO_DEFAULT, language_key))
+    f_fund_input = st.text_input(text["frequency"], value=inputs_layout.format_input(FREQ_DEFAULT, language_key))
+    I_curto_circuito_input = st.text_input(text["short_circuit_current"], value=inputs_layout.format_input(CORRENTE_CURTO_DEFAULT, language_key))
 
     # Convert inputs to floats
     V_ff = inputs_layout.parse_input(V_ff_input, language_key) * 1e3 if V_ff_input else None

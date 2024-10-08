@@ -47,7 +47,7 @@ from matplotlib.ticker import EngFormatter
 def format_values(soma_Q_3f, V_ff, V_fn, I_curto_circuito, L_reator, i_pico_inicial, omega, i_pico_inicial_todos_pu,
                   conclusao1, maxima_corrente_de_pico_dos_bancos):
     # Create formatters
-    formatter_VAr = EngFormatter(places=1, unit='VAr')
+    formatter_VAr = EngFormatter(places=2, unit='VAr')
     formatter_V = EngFormatter(places=1, unit='V')
     formatter_A = EngFormatter(places=1, unit='A')
     formatter_H = EngFormatter(places=1)

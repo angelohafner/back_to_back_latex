@@ -94,14 +94,23 @@ A energização de um banco de capacitores (Figura \ref{fig:picture1}) pelo fech
 	
 \section{Dados de entrada do banco}
 \begin{itemize}[label=\textendash]
-	\item	Potencia reativa  = {{potencia_reativa_do_banco}}
-	\item	Tensão trifásica  = {{tensao_trifasica}}
-	\item	Tensão monofásica  = {{tensao_monofasica}}
-	\item	Corrente de curto-circuito  = {{corrente_de_curto}}
+	\item	Potencia reativa  = {{5.25 MVAr}}
+	\item	Tensão trifásica  = {{15.0 kV}}
+	\item	Tensão monofásica  = {{8.7 kV}}
+	\item	Corrente de curto-circuito  = {{2.5 MA}}
 \end{itemize}
 
 \begin{center}
-	% INSERT_TABLE_HERE
+	\begin{tabular}{lllllllllll}
+\toprule
+ & $Q_{3\phi}$ & $Q_{1\phi}$ & $V_{3\phi}$ & $V_{1\phi}$ & $I_{1\phi}$ & $X_{1\phi}$ & $C_{1\phi}$ & $L_{1\phi}$ & $I_{p}/I_{n}$ & $f_{0}$ \\
+\midrule
+0 & 1.75 MVAr & 583.33 kVAr & 15.0 kV & 8.7 kV & 67.4 A & 128.6 $\Omega$ & 24.76 µF & 100.0 µH & 83.2 & 3.0 kHz \\
+1 & 1.75 MVAr & 583.33 kVAr & 15.0 kV & 8.7 kV & 67.4 A & 128.6 $\Omega$ & 24.76 µF & 100.0 µH & 43.7 & 3.1 kHz \\
+2 & 1.75 MVAr & 583.33 kVAr & 15.0 kV & 8.7 kV & 67.4 A & 128.6 $\Omega$ & 24.76 µF & 100.0 µH & 58.3 & 3.1 kHz \\
+\bottomrule
+\end{tabular}
+
 \end{center}
 
 
@@ -133,15 +142,15 @@ Essa corrente oscilatória é limitada apenas pela impedância do banco de capac
 	\label{fig:picture2}
 \end{figure}
 
-São os valores obtidos com o reator escolhido ($L_{reator} = {{indutancia_escolhida}} \, \mu \rm{H} $):
+São os valores obtidos com o reator escolhido ($L_{reator} = {{100.0}} \, \mu \rm{H} $):
 \begin{itemize}[label=\textendash]
-	\item	Corrente de pico: {{corrente_pico}};
-	\item	Frequência de Oscilação: {{frequencia_oscilacao}}Hz;
-	\item	Corrente inrush / Corrente nominal: {{inrush_inominal}}
+	\item	Corrente de pico: {{5.6 kA}};
+	\item	Frequência de Oscilação: {{3.1 k}}Hz;
+	\item	Corrente inrush / Corrente nominal: {{83.2}}
 \end{itemize}
 
 \section{Conclusão}
-{{conclusao1}}
+{{Reator adequado, pois $\dfrac{I_{\rm inrush}}{I_{\rm rated}} = $83,16$\le 100$ e $f_{\rm osc} = $3121Hz < 4,25 kHz, IEEE Std C37.012, p. 16[$^{[2]}$](https://ieeexplore.ieee.org/document/7035261) e IEC 62271-100, Table 9 (Preferred values of rated capacitive switching currents), p. 45[$^{[3]}$](https://webstore.iec.ch/publication/62785).}}
 
 \section{Referências}
 
