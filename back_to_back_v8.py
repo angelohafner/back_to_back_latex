@@ -171,7 +171,12 @@ import relatorio
 base_filename = 'TEMPLATE_Relatorio_Inrush_DAX'
 arquivo_original_tex = f"{base_filename}_{language_key}.tex"
 relatorio.gerar_figura(t, i_pico_inicial, sigma, omega, f_fund)
-nome_arquivo_saida = f'Report_Inrush_DAX_{REATIVOS_DEFAULT}kVAr_{TENSAO_DEFAULT}kV_uH{INDUTOR_DEFAULT}'
+nome_arquivo_saida = (
+    f'Report_Inrush_DAX_{np.round(Q_3f[0]/1000, 1)}kVAr_'
+    f'{V_ff_input}kV_'
+    f'{np.round(1e6 * L_reator[0], 1)}uH'
+)
+
 
 if st.button(text["latex_report"]):
     arquivo_original_tex = f"{base_filename}_{language_key}.tex"

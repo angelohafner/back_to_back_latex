@@ -161,6 +161,7 @@ import numpy as np
 def plot_inrush(t, i_curto, envelope, text, I_fn, tensao_transitoria):
     fig = go.Figure()
     den = np.sqrt(2)*I_fn.max()
+
     fig.add_trace(go.Scatter(
         x=t * 1e3,
         y=i_curto / den,
